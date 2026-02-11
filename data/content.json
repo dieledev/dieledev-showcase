@@ -1,0 +1,25 @@
+{
+  "brand": {
+    "name": "dieledev"
+  },
+  "hero": {
+    "title": "dieledev",
+    "titleAccent": "showcase",
+    "subtitle": "Creative development projects\nand digital experiments.",
+    "scrollLabel": "Our featured works"
+  },
+  "about": {
+    "heading": "About",
+    "text": "I'm Jochem — a developer building digital tools, creative experiments, and everything in between. This showcase collects all my active projects in one place.\n\nEvery project starts as a curiosity. Some grow into full products, others stay experiments. All of them teach me something new."
+  },
+  "contact": {
+    "heading": "Contact",
+    "text": "Please contgact me for further information at devdiele@gmail.com",
+    "email": "devdiele@gmail.com",
+    "buttonText": "devdiele@gmail.com"
+  },
+  "footer": {
+    "text": "© {year} dieledev. All rights reserved.",
+    "subtext": "Built with Next.js & Tailwind CSS"
+  }
+}

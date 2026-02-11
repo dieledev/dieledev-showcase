@@ -1,0 +1,40 @@
+---
+description: 3-layer architecture for data pipelines and scrapers — only add this rule to pipeline projects
+alwaysApply: false
+---
+
+# Pipeline Architecture
+
+This project uses a 3-layer separation of concerns:
+
+## Structure
+
+| Layer | Purpose | Location |
+|-------|---------|----------|
+| **Directives** | SOPs in Markdown — what to do, step by step | `directives/` |
+| **Orchestration** | You — read directives, call scripts, handle errors | (the AI agent) |
+| **Execution** | Deterministic Python scripts that do the actual work | `execution/` |
+
+## Why
+LLMs are probabilistic; business logic should be deterministic. Push complexity into tested Python scripts. The agent focuses on decision-making and error routing.
+
+## Workflow
+1. Receive task → check `directives/` for a matching SOP.
+2. Check `execution/` for the script the directive references.
+3. If both exist: read directive, prepare inputs, run script.
+4. If directive exists but no script: write the script, test it, then run.
+5. If neither exists: ask the user whether to create a new directive + script, or handle ad-hoc.
+
+## Directives are living documents
+When you discover API limits, better approaches, or edge cases — update the directive. But **never create or overwrite directives without asking**.
+
+## File layout
+```
+project-root/
+├── directives/          # SOPs (Markdown)
+├── execution/           # Python scripts
+│   └── utils.py         # Shared helpers
+├── .tmp/                # Intermediate files (never commit)
+├── .env                 # Secrets (never commit)
+└── requirements.txt
+```

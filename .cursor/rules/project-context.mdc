@@ -1,0 +1,20 @@
+---
+description: Project-specific context — customize this per project
+alwaysApply: true
+---
+
+# Project Context
+
+**Project:** Showcase website displaying all dieledev development projects with public browsing, search/filter, and a protected admin dashboard for CRUD management.
+
+**Owner:** Jochem
+
+**Stack:** Next.js 14 (App Router), TypeScript (strict), Tailwind CSS, local JSON file storage
+
+**Deliverables:** Local files, deployed as a web app
+
+**Folder conventions:**
+- `src/app/` — Next.js pages and API routes
+- `src/components/` — Reusable React components
+- `src/lib/` — Types, storage, validation, utility modules
+- `data/projects.json` — Project data (JSON file storage)

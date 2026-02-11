@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "egg-zact",
+    "title": "Egg-Zact",
+    "description": "Een slimme eierwekker app die perfect getimede eieren garandeert, ongeacht hoogte en begintemperatuur.",
+    "imageUrl": "https://images.unsplash.com/photo-1582722872445-44dc1f3e3b2d?w=800",
+    "linkUrl": "https://egg-zact.dieledev.work",
+    "tags": [
+      "food",
+      "timer",
+      "pwa"
+    ],
+    "status": "Live",
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2026-02-10T21:21:13.706Z"
+  },
+  {
+    "slug": "chef-nahal",
+    "title": "Chef Nahal",
+    "description": "AI-powered receptengenerator die persoonlijke voorkeuren combineert met seizoensgebonden ingrediënten.",
+    "imageUrl": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800",
+    "linkUrl": "https://chef-nahal.dieledev.work",
+    "tags": [
+      "ai",
+      "food",
+      "recipes"
+    ],
+    "status": "WIP",
+    "createdAt": "2024-02-01T14:30:00.000Z",
+    "updatedAt": "2024-02-05T09:15:00.000Z"
+  },
+  {
+    "slug": "portfolio-v2",
+    "title": "Portfolio V2",
+    "description": "Vernieuwde portfolio website met 3D animaties en interactieve case studies. Gebouwd met Three.js en React.",
+    "imageUrl": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800",
+    "linkUrl": "https://dieledev.work",
+    "tags": [
+      "portfolio",
+      "3d",
+      "showcase"
+    ],
+    "status": "Archived",
+    "createdAt": "2023-11-20T16:45:00.000Z",
+    "updatedAt": "2024-01-10T11:20:00.000Z"
+  }
+]

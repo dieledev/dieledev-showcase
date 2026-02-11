@@ -1,0 +1,38 @@
+---
+description: Python coding standards and conventions
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python Standards
+
+## Language & Style
+- Python 3.11+ — use type hints, f-strings, and `pathlib` for file paths.
+- Create directories with `Path.mkdir(parents=True, exist_ok=True)`.
+
+## Dependencies
+- Track in `requirements.txt` with minimum version pins (e.g., `requests>=2.31.0`).
+- Use `python-dotenv` to load environment variables from `.env`.
+
+## Error Handling
+- Always wrap API/external calls in `try/except` with specific exception types.
+- Log the error with enough context to debug, then raise or return a clear message.
+- Never use bare `except:` — at minimum catch `Exception`.
+
+```python
+# Good
+try:
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+except requests.RequestException as e:
+    logger.error(f"Failed to fetch {url}: {e}")
+    raise
+```
+
+## Logging
+- Use `print()` for simple scripts; use the `logging` module for anything with multiple stages or error recovery.
+
+## Project Hygiene
+- Shared helper functions go in a `utils.py` module (or a `utils/` package for larger projects).
+- Intermediate/temp files go in `.tmp/` — never commit this directory.
+- Secrets (`.env`, credential files) must be in `.gitignore`.

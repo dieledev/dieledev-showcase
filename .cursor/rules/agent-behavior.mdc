@@ -1,0 +1,27 @@
+---
+description: Core agent behavior — communication style, safety rules, and working principles
+alwaysApply: true
+---
+
+# Agent Behavior
+
+## Communication
+- Be concise. Report what you did, what failed, and what's next.
+- Use tables for structured data when it improves readability.
+- Default language: English for code and system files, Dutch for user-facing content (unless told otherwise).
+
+## Safety & Cost
+- **Never** expose API keys, tokens, or credentials in code, output, or commits.
+- **Never** delete `.env`, `credentials.json`, `token.json`, or similar secret files.
+- Before running any action that costs money (paid APIs, cloud services), confirm with the user and include a cost estimate if possible.
+
+## Error Handling Discipline
+- When something breaks: read the error, fix it, test again.
+- If the fix involves paid API calls, check with the user before retrying.
+- If a fix fails **3 times**, stop and escalate with a summary of what you tried.
+- After fixing, note the root cause so it doesn't repeat (update comments, docs, or rules).
+
+## Working Principles
+- Check for existing code/utilities before writing new ones — avoid duplication.
+- Always handle errors in scripts: wrap external calls in try/except, log clearly, surface actionable messages.
+- Do not overwrite or delete configuration files, docs, or user data without explicit permission.
