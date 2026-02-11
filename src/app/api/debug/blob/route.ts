@@ -1,17 +1,8 @@
 import { NextResponse } from "next/server";
 import { put, list, del } from "@vercel/blob";
 
-/** GET /api/debug/blob — test Vercel Blob connection */
-export async function GET(request: Request) {
-  const token = request.headers.get("X-Admin-Token");
-  if (token !== process.env.ADMIN_TOKEN) {
-    // Also allow via query param for easy browser testing
-    const url = new URL(request.url);
-    const queryToken = url.searchParams.get("token");
-    if (queryToken !== process.env.ADMIN_TOKEN) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+/** GET /api/debug/blob — test Vercel Blob connection (temporary debug endpoint) */
+export async function GET() {
 
   const results: Record<string, unknown> = {
     hasToken: !!process.env.BLOB_READ_WRITE_TOKEN,
