@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import { unlink, access } from "fs/promises";
-import { join } from "path";
-
-const UPLOAD_DIR = join(process.cwd(), "public", "uploads");
+import { del, list } from "@vercel/blob";
 
 /** DELETE /api/media/[filename] — remove an uploaded image */
 export async function DELETE(
@@ -25,19 +22,20 @@ export async function DELETE(
       );
     }
 
-    const filepath = join(UPLOAD_DIR, filename);
+    // Find the blob by pathname
+    const { blobs } = await list();
+    const blob = blobs.find(
+      (b) => b.pathname === filename || b.pathname === `uploads/${filename}`
+    );
 
-    // Check file exists
-    try {
-      await access(filepath);
-    } catch {
+    if (!blob) {
       return NextResponse.json(
         { error: "File not found" },
         { status: 404 }
       );
     }
 
-    await unlink(filepath);
+    await del(blob.url);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

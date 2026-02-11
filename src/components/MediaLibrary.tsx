@@ -115,7 +115,12 @@ export function MediaLibrary({
 
   const handleDelete = async (filename: string, url: string) => {
     try {
-      const res = await fetch(`/api/media/${filename}`, {
+      // Extract just the last segment for the API route
+      const shortName = filename.includes("/")
+        ? filename.split("/").pop()!
+        : filename;
+
+      const res = await fetch(`/api/media/${encodeURIComponent(shortName)}`, {
         method: "DELETE",
         headers: { "X-Admin-Token": token },
       });

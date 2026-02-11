@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { readdir, mkdir, writeFile } from "fs/promises";
-import { join, extname } from "path";
+import { put, list } from "@vercel/blob";
 
-const UPLOAD_DIR = join(process.cwd(), "public", "uploads");
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_TYPES = new Set([
   "image/jpeg",
@@ -23,18 +21,12 @@ function sanitizeFilename(name: string): string {
 /** GET /api/media — list all uploaded images */
 export async function GET() {
   try {
-    await mkdir(UPLOAD_DIR, { recursive: true });
-    const files = await readdir(UPLOAD_DIR);
+    const { blobs } = await list();
 
-    const images = files
-      .filter((f) => {
-        const ext = extname(f).toLowerCase();
-        return [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"].includes(ext);
-      })
-      .map((f) => ({
-        filename: f,
-        url: `/uploads/${f}`,
-      }));
+    const images = blobs.map((blob) => ({
+      filename: blob.pathname,
+      url: blob.url,
+    }));
 
     return NextResponse.json({ images });
   } catch (error) {
@@ -80,26 +72,24 @@ export async function POST(request: Request) {
       );
     }
 
-    await mkdir(UPLOAD_DIR, { recursive: true });
-
     // Generate unique filename
     const timestamp = Date.now();
-    const ext = extname(file.name) || ".jpg";
-    const baseName = sanitizeFilename(
-      file.name.replace(ext, "")
-    );
-    const filename = `${timestamp}-${baseName}${ext}`;
-    const filepath = join(UPLOAD_DIR, filename);
+    const ext = file.name.includes(".")
+      ? `.${file.name.split(".").pop()}`
+      : ".jpg";
+    const baseName = sanitizeFilename(file.name.replace(/\.[^.]+$/, ""));
+    const pathname = `uploads/${timestamp}-${baseName}${ext}`;
 
-    // Write file
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filepath, buffer);
+    // Upload to Vercel Blob
+    const blob = await put(pathname, file, {
+      access: "public",
+    });
 
     return NextResponse.json(
       {
         image: {
-          filename,
-          url: `/uploads/${filename}`,
+          filename: blob.pathname,
+          url: blob.url,
         },
       },
       { status: 201 }
