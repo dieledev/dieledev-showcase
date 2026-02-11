@@ -90,9 +90,10 @@ export async function PUT(
 
     return NextResponse.json({ project: updated });
   } catch (error) {
-    console.error(`PUT /api/projects/${params.slug} failed:`, error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error(`PUT /api/projects/${params.slug} failed:`, message, error);
     return NextResponse.json(
-      { error: "Failed to save data" },
+      { error: message.includes("BLOB") ? message : "Failed to save data. Please try again." },
       { status: 500 }
     );
   }

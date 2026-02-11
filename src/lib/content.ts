@@ -7,6 +7,8 @@ const DATA_DIR = join(process.cwd(), "data");
 const CONTENT_FILE = join(DATA_DIR, "content.json");
 const BLOB_KEY = "data/content.json";
 
+let cachedBlobUrl: string | null = null;
+
 export const DEFAULT_CONTENT: SiteContent = {
   brand: {
     name: "dieledev",
@@ -35,17 +37,33 @@ export const DEFAULT_CONTENT: SiteContent = {
 
 /** Read content: try Vercel Blob first, fall back to local file, then defaults */
 export async function getSiteContent(): Promise<SiteContent> {
-  // Try Vercel Blob first
-  try {
-    const { blobs } = await list({ prefix: BLOB_KEY });
-    const blob = blobs.find((b) => b.pathname === BLOB_KEY);
-    if (blob) {
-      const res = await fetch(blob.url, { cache: "no-store" });
-      const stored = (await res.json()) as Partial<SiteContent>;
-      return deepMerge(DEFAULT_CONTENT, stored) as SiteContent;
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      if (cachedBlobUrl) {
+        try {
+          const res = await fetch(cachedBlobUrl, { cache: "no-store" });
+          if (res.ok) {
+            const stored = (await res.json()) as Partial<SiteContent>;
+            return deepMerge(DEFAULT_CONTENT, stored) as SiteContent;
+          }
+        } catch {
+          cachedBlobUrl = null;
+        }
+      }
+
+      const { blobs } = await list({ prefix: BLOB_KEY });
+      const blob = blobs.find((b) => b.pathname === BLOB_KEY);
+      if (blob) {
+        cachedBlobUrl = blob.url;
+        const res = await fetch(blob.url, { cache: "no-store" });
+        if (res.ok) {
+          const stored = (await res.json()) as Partial<SiteContent>;
+          return deepMerge(DEFAULT_CONTENT, stored) as SiteContent;
+        }
+      }
+    } catch (error) {
+      console.error("Blob read failed for content, falling back to local:", error);
     }
-  } catch {
-    // Blob not available, fall through
   }
 
   // Fall back to local file
@@ -60,16 +78,19 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 /** Save content to Vercel Blob */
 export async function saveSiteContent(content: SiteContent): Promise<void> {
-  try {
-    await put(BLOB_KEY, JSON.stringify(content, null, 2), {
-      access: "public",
-      addRandomSuffix: false,
-      contentType: "application/json",
-    });
-  } catch (error) {
-    console.error("Failed to save content:", error);
-    throw new Error("Failed to save content");
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      "BLOB_READ_WRITE_TOKEN is not configured. Add Vercel Blob storage to your project."
+    );
   }
+
+  const blob = await put(BLOB_KEY, JSON.stringify(content, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json",
+  });
+
+  cachedBlobUrl = blob.url;
 }
 
 function deepMerge(
