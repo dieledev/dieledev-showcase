@@ -61,6 +61,7 @@ export async function saveNavItems(items: NavItem[]): Promise<void> {
   const blob = await put(BLOB_KEY, JSON.stringify(items, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json",
   });
 

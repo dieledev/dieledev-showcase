@@ -87,6 +87,7 @@ export async function saveSiteContent(content: SiteContent): Promise<void> {
   const blob = await put(BLOB_KEY, JSON.stringify(content, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json",
   });
 

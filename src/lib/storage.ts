@@ -70,6 +70,7 @@ export async function saveProjects(projects: Project[]): Promise<void> {
   const blob = await put(BLOB_KEY, JSON.stringify(projects, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json",
   });
 
