@@ -12,7 +12,7 @@ import { ContentManager } from "./ContentManager";
 
 type AdminTab = "projects" | "navigation" | "content";
 
-export function AdminDashboard({ token }: { token: string }) {
+export function AdminDashboard({ token, onLogout }: { token: string; onLogout?: () => void }) {
   const [activeTab, setActiveTab] = useState<AdminTab>("projects");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -204,6 +204,14 @@ export function AdminDashboard({ token }: { token: string }) {
               <p className="text-sm text-gray-500 mt-0.5">Manage your showcase</p>
             </div>
             <div className="flex items-center gap-3">
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                >
+                  Logout
+                </button>
+              )}
               <a
                 href="/"
                 className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
