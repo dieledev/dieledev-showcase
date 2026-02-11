@@ -157,12 +157,12 @@ export function ProjectForm({
 
               {imageUrl ? (
                 <div className="relative group">
-                  <div className="overflow-hidden rounded-lg border border-gray-200">
+                  <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={imageUrl}
                       alt="Selected"
-                      className="h-36 w-full object-cover"
+                      className="h-48 w-full object-contain"
                     />
                   </div>
                   <div className="mt-2 flex items-center gap-2">

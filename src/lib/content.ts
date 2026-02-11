@@ -1,10 +1,11 @@
-import { readFile, writeFile, mkdir, rename } from "fs/promises";
+import { readFile } from "fs/promises";
 import { join } from "path";
-import { randomUUID } from "crypto";
+import { put, list } from "@vercel/blob";
 import { SiteContent } from "./types";
 
 const DATA_DIR = join(process.cwd(), "data");
 const CONTENT_FILE = join(DATA_DIR, "content.json");
+const BLOB_KEY = "data/content.json";
 
 export const DEFAULT_CONTENT: SiteContent = {
   brand: {
@@ -32,34 +33,39 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
 };
 
+/** Read content: try Vercel Blob first, fall back to local file, then defaults */
 export async function getSiteContent(): Promise<SiteContent> {
+  // Try Vercel Blob first
+  try {
+    const { blobs } = await list({ prefix: BLOB_KEY });
+    const blob = blobs.find((b) => b.pathname === BLOB_KEY);
+    if (blob) {
+      const res = await fetch(blob.url, { cache: "no-store" });
+      const stored = (await res.json()) as Partial<SiteContent>;
+      return deepMerge(DEFAULT_CONTENT, stored) as SiteContent;
+    }
+  } catch {
+    // Blob not available, fall through
+  }
+
+  // Fall back to local file
   try {
     const data = await readFile(CONTENT_FILE, "utf-8");
     const stored = JSON.parse(data) as Partial<SiteContent>;
-    // Merge with defaults so new fields are always present
     return deepMerge(DEFAULT_CONTENT, stored) as SiteContent;
-  } catch (error) {
-    const err = error as NodeJS.ErrnoException;
-    if (err.code === "ENOENT") {
-      await mkdir(DATA_DIR, { recursive: true });
-      await writeFile(
-        CONTENT_FILE,
-        JSON.stringify(DEFAULT_CONTENT, null, 2),
-        "utf-8"
-      );
-      return { ...DEFAULT_CONTENT };
-    }
-    console.error("Failed to read content:", error);
-    throw new Error("Failed to load content");
+  } catch {
+    return { ...DEFAULT_CONTENT };
   }
 }
 
+/** Save content to Vercel Blob */
 export async function saveSiteContent(content: SiteContent): Promise<void> {
   try {
-    await mkdir(DATA_DIR, { recursive: true });
-    const tmpFile = join(DATA_DIR, `.content-${randomUUID()}.tmp`);
-    await writeFile(tmpFile, JSON.stringify(content, null, 2), "utf-8");
-    await rename(tmpFile, CONTENT_FILE);
+    await put(BLOB_KEY, JSON.stringify(content, null, 2), {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: "application/json",
+    });
   } catch (error) {
     console.error("Failed to save content:", error);
     throw new Error("Failed to save content");
